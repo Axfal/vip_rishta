@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:rishta_app/screens/dashboard/provider/provider.dart';
-import 'package:rishta_app/screens/splash_screen/splash_screen.dart';
+import 'core/route/routes.dart';
+import 'core/route/routes_name.dart';
+import 'dependency_indjection/locator.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  ServiceLocator.setup();
   runApp(const MyApp());
 }
 
@@ -14,9 +18,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => DashboardProvider()),
-      ],
+      providers: [ChangeNotifierProvider(create: (_) => DashboardProvider())],
       child: ScreenUtilInit(
         designSize: const Size(360, 690),
         minTextAdapt: true,
@@ -24,12 +26,14 @@ class MyApp extends StatelessWidget {
         builder: (context, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            home: child,
+            title: 'VIP Rishta',
+            themeMode: ThemeMode.dark,
+            supportedLocales: const [Locale('en'), Locale('es')],
+            initialRoute: RoutesName.splash,
+            onGenerateRoute: Routes.generateRoute,
           );
         },
-        child: SplashScreen(),
       ),
     );
   }
 }
-

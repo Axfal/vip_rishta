@@ -17,7 +17,7 @@ class CustomTextField extends StatelessWidget {
 
   final bool isDropdown;
   final VoidCallback? onTap;
-
+  final void Function(String)? onChange;
   const CustomTextField({
     super.key,
     required this.controller,
@@ -32,13 +32,14 @@ class CustomTextField extends StatelessWidget {
     this.inputFormatters,
     this.isDropdown = false,
     this.onTap,
+    this.onChange,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
-      style: const TextStyle(color: Colors.white), // user input white
+      style: const TextStyle(color: Colors.white),
       obscureText: obscureText,
       keyboardType: keyboardType,
       inputFormatters: inputFormatters,
@@ -46,6 +47,7 @@ class CustomTextField extends StatelessWidget {
       cursorColor: Colors.white,
       readOnly: isDropdown,
       onTap: isDropdown ? onTap : null,
+      onChanged: onChange,
       decoration: InputDecoration(
         labelText: labelText,
         labelStyle: AppText.caption.copyWith(color: Colors.white),
@@ -57,9 +59,7 @@ class CustomTextField extends StatelessWidget {
             ? const Icon(Icons.keyboard_arrow_down, color: Colors.white)
             : suffixIcon,
         errorStyle: const TextStyle(color: Colors.white),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: AppColors.white, width: 1.5),

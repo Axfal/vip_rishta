@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:rishta_app/screens/auth/login/login_screen.dart';
-import 'package:rishta_app/screens/auth/signup/view/signup_screen.dart';
-import 'package:rishta_app/screens/splash_screen/splash_screen.dart';
-import 'package:rishta_app/utils/route/routes_name.dart';
+import 'package:rishta_app/screens/auth/forgot_password/request_otp.dart';
+import 'package:rishta_app/screens/auth/forgot_password/verify_otp.dart';
+
+import 'route_exports.dart';
 
 class Routes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -12,9 +11,14 @@ class Routes {
       case RoutesName.login:
         return MaterialPageRoute(builder: (context) => LoginScreen());
       case RoutesName.signup:
-        return MaterialPageRoute(
-          builder: (context) => SignupScreen(onTap: () {}),
-        );
+        return MaterialPageRoute(builder: (context) => SignUpScreen());
+      case RoutesName.forgot:
+        return MaterialPageRoute(builder: (context) => RequestOTP());
+      case RoutesName.verifyOtp:
+        return MaterialPageRoute(builder: (context) => VerifyOtp());
+
+      case RoutesName.home:
+        return MaterialPageRoute(builder: (context) => HomePage());
 
       default:
         return MaterialPageRoute(

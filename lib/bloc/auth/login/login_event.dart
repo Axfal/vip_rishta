@@ -36,3 +36,9 @@ class SubmitCredentials extends LoginEvent {
   // TODO: implement props
   List<Object?> get props => [];
 }
+
+class ResetApiResponse extends LoginEvent {
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}

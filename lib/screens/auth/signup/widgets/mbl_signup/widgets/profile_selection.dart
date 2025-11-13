@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:rishta_app/core/constants/color/app_color.dart';
 import 'package:rishta_app/core/constants/custom_button.dart';
-import 'package:rishta_app/core/constants/text/app_text.dart';
-import 'package:rishta_app/global_widgets/auth/auth_background.dart';
 import 'package:rishta_app/screens/auth/signup/widgets/mbl_signup/widgets/name_and_birth_date.dart';
+
+import '../../../../../../bloc/auth/signup/sign_up_bloc.dart';
 
 class ProfileSelection extends StatefulWidget {
   const ProfileSelection({super.key});
@@ -29,144 +32,302 @@ class _ProfileSelectionState extends State<ProfileSelection> {
   final List<String> profilesNeedGender = [
     "Myself",
     "My Friend",
-    "My Relative"
+    "My Relative",
   ];
 
   @override
   Widget build(BuildContext context) {
+    final signUpBloc = context.read<SignUpBloc>();
+
     bool showGender =
         selectedProfile != null && profilesNeedGender.contains(selectedProfile);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text(
-          "Profile Selection",
-          style: AppText.subheading.copyWith(color: Colors.white),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      body: SizedBox.expand(
-        child:  AuthBackground(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(gradient: AppColors.Linear_gradient),
+        child: Stack(
+          children: [
+            Positioned(
+              top: 120,
+              left: 40,
+              child:
+                  Icon(
+                        Icons.favorite,
+                        size: 36,
+                        color: AppColors.white.withValues(alpha: 0.25),
+                      )
+                      .animate(onPlay: (c) => c.repeat())
+                      .moveY(
+                        begin: 0,
+                        end: -15,
+                        duration: 2200.ms,
+                        curve: Curves.easeInOut,
+                      ),
+            ),
+            Positioned(
+              bottom: 160,
+              right: 50,
+              child:
+                  Icon(
+                        Icons.favorite,
+                        size: 30,
+                        color: AppColors.white.withValues(alpha: 0.20),
+                      )
+                      .animate(onPlay: (c) => c.repeat())
+                      .moveY(
+                        begin: 0,
+                        end: 18,
+                        duration: 2400.ms,
+                        curve: Curves.easeInOut,
+                      ),
+            ),
+
+            SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 100,
+              ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 110),
-            
-                  const Center(
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundColor: Colors.white24,
-                      child: Icon(Icons.person,
-                          size: 50, color: AppColors.white),
-                    ),
-                  ),
-            
-                  const SizedBox(height: 20),
+                  Image.asset('assets/logo/vip_rishta.png', height: 110)
+                      .animate()
+                      .fade(duration: 900.ms)
+                      .scale(duration: 1200.ms, curve: Curves.easeOutBack),
+
+                  const SizedBox(height: 18),
 
                   Text(
-                    "This Profile is for",
-                    style: AppText.subheading.copyWith(color: Colors.white),
-                  ),
-                  const SizedBox(height: 12),
-            
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: profileOptions.map((option) {
-                      bool isSelected = selectedProfile == option;
-                      return ChoiceChip(
-                        label: Text(option, style: AppText.body),
-                        selected: isSelected,
-                        onSelected: (_) {
-                          setState(() {
-                            selectedProfile = option;
-                            selectedGender = null;
-                          });
-                        },
-                        selectedColor: AppColors.black,
-                        backgroundColor: Colors.white,
-                        labelStyle: TextStyle(
-                          color: isSelected ? Colors.white : Colors.black,
+                        "This Profile is for",
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
                         ),
-                      );
-                    }).toList(),
-                  ),
-            
-                  const SizedBox(height: 30),
-            
-                  if (showGender) ...[
-                    Text("Your Gender", style: AppText.subheading.copyWith(color: Colors.white)),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 10,
-                      children: ["Male", "Female"].map((gender) {
-                        bool isSelected = selectedGender == gender;
-                        return ChoiceChip(
-                          label: Text(gender, style: AppText.body),
-                          selected: isSelected,
-                          onSelected: (_) {
-                            setState(() {
-                              selectedGender = gender;
-                            });
-                          },
-                          selectedColor: AppColors.black,
-                          backgroundColor: Colors.grey.shade200,
-                          labelStyle: TextStyle(
-                            color: isSelected ? Colors.white : Colors.black,
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 30),
-                  ],
-            
-                  Center(
-                    child: SizedBox(
-                      width: 200,
-                      height: 45,
-                      child: CustomGradientButton(
-                        text: 'Continue',
-                        textColor: AppColors.primaryColor,
-                        backgroundColor: Colors.white,
-                        onPressed: () {
-                          if (selectedProfile == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text("Please select a profile option")),
-                            );
-                            return;
-                          }
-            
-                          if (showGender && selectedGender == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text("Please select gender")),
-                            );
-                            return;
-                          }
-                           Navigator.push(context,
-                            MaterialPageRoute(
-                                builder: (context) => NameAndBirthDate(
-                              profileFor: selectedProfile!,
-                              gender: selectedGender,
+                      )
+                      .animate()
+                      .fade(duration: 900.ms)
+                      .moveY(begin: 15, end: 0, curve: Curves.easeOut),
+
+                  const SizedBox(height: 18),
+
+                  BlocBuilder<SignUpBloc, SignUpState>(
+                    buildWhen: (current, previous) =>
+                        current.profileCreatedFor !=
+                            previous.profileCreatedFor ||
+                        current.gender != previous.gender,
+                    builder: (context, state) {
+                      return Wrap(
+                        spacing: 10,
+                        runSpacing: 12,
+                        alignment: WrapAlignment.center,
+                        children: profileOptions.map((option) {
+                          final isSelected = selectedProfile == option;
+
+                          return ChoiceChip(
+                            label: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              child: Text(
+                                option,
+                                style: GoogleFonts.poppins(
+                                  color: AppColors.primaryColor,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                  fontSize: 13.5,
                                 ),
-                             ),
-                           );
-                        },
-                      ),
-                    ),
+                              ),
+                            ),
+                            selected: isSelected,
+                            onSelected: (_) {
+                              setState(() {
+                                selectedProfile = option;
+
+                                if (option == "My Son") {
+                                  selectedGender = "Male";
+                                  signUpBloc.add(
+                                    GenderChangeEvent(gender: "Male"),
+                                  );
+                                } else if (option == "My Daughter") {
+                                  selectedGender = "Female";
+                                  signUpBloc.add(
+                                    GenderChangeEvent(gender: "Female"),
+                                  );
+                                } else if (option == 'My Brother') {
+                                  selectedGender = "Male";
+                                  signUpBloc.add(
+                                    GenderChangeEvent(gender: "Female"),
+                                  );
+                                } else if (option == 'My Sister') {
+                                  selectedGender = "Female";
+                                  signUpBloc.add(
+                                    GenderChangeEvent(gender: "Female"),
+                                  );
+                                } else {
+                                  selectedGender = null;
+                                }
+
+                                // Trigger profile event
+                                signUpBloc.add(
+                                  ProfileCreatedForChangeEvent(
+                                    profileCreatedFor: option,
+                                  ),
+                                );
+                              });
+                            },
+                            selectedColor: AppColors.white,
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              side: BorderSide(
+                                color: isSelected
+                                    ? Colors.white
+                                    : Colors.white.withValues(alpha: 0.4),
+                              ),
+                            ),
+                            elevation: 2,
+                          ).animate().fade(duration: 700.ms);
+                        }).toList(),
+                      );
+                    },
                   ),
+
+                  const SizedBox(height: 35),
+
+                  if (showGender) ...[
+                    Text(
+                      "Select Gender",
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ).animate().fade(duration: 800.ms).moveY(begin: 12, end: 0),
+                    const SizedBox(height: 16),
+                    BlocBuilder<SignUpBloc, SignUpState>(
+                      buildWhen: (current, previous) =>
+                          current.profileCreatedFor !=
+                              previous.profileCreatedFor ||
+                          current.gender != previous.gender,
+                      builder: (context, state) {
+                        return Wrap(
+                          spacing: 14,
+                          runSpacing: 10,
+                          alignment: WrapAlignment.center,
+                          children: ["Male", "Female"].map((gender) {
+                            final isSelected = selectedGender == gender;
+                            return ChoiceChip(
+                              label: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                child: Text(
+                                  gender,
+                                  style: GoogleFonts.poppins(
+                                    color: AppColors.primaryColor,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w600
+                                        : FontWeight.w400,
+                                    fontSize: 13.5,
+                                  ),
+                                ),
+                              ),
+                              selected: isSelected,
+                              onSelected: (_) {
+                                setState(() {
+                                  selectedGender = gender;
+                                  signUpBloc.add(
+                                    GenderChangeEvent(gender: gender),
+                                  );
+                                });
+                              },
+                              selectedColor: AppColors.white,
+                              backgroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                side: BorderSide(
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.white.withValues(alpha: 0.4),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      },
+                    ).animate().fade(duration: 900.ms).moveY(begin: 12, end: 0),
+                    const SizedBox(height: 40),
+                  ],
+
+                  SizedBox(
+                        width: 220,
+                        height: 48,
+                        child: CustomGradientButton(
+                          text: 'Continue',
+                          textColor: AppColors.primaryColor,
+                          backgroundColor: Colors.white,
+                          onPressed: () {
+                            if (selectedProfile == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "Please select a profile option",
+                                  ),
+                                ),
+                              );
+                              return;
+                            }
+                            if (showGender && selectedGender == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Please select your gender"),
+                                ),
+                              );
+                              return;
+                            }
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BlocProvider.value(
+                                  value: signUpBloc,
+                                  child: NameAndBirthDate(
+                                    profileFor: selectedProfile!,
+                                    gender: selectedGender,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      )
+                      .animate()
+                      .fade(duration: 1000.ms)
+                      .moveY(begin: 20, end: 0, curve: Curves.easeOutBack),
+
+                  const SizedBox(height: 25),
+
+                  Text(
+                    "We use this information to personalize your experience",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ).animate().fade(duration: 1200.ms).moveY(begin: 12, end: 0),
                 ],
               ),
             ),
-          ),
+          ],
         ),
       ),
     );

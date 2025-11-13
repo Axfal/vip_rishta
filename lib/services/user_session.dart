@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:rishta_app/utils/route/routes_name.dart';
+import 'package:rishta_app/core/route/routes_name.dart';
 
 import '../model/auth/user_model.dart';
 import 'local_storage.dart';

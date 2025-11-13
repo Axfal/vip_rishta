@@ -9,6 +9,7 @@ import 'package:rishta_app/screens/home/widgets/matched_member_list.dart';
 import 'package:rishta_app/screens/premium/assisted/assisted_page.dart';
 import 'package:rishta_app/screens/premium/assisted/widgets/VIP_shaddi_card.dart';
 import 'package:rishta_app/screens/premium/premium_page.dart';
+import 'package:rishta_app/services/user_session.dart';
 import '../../core/constants/color/app_color.dart';
 import '../../core/constants/custom_button.dart';
 import '../../global_widgets/PrimaryWidgets/app_bar.dart';
@@ -52,7 +53,9 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       drawer: CustomDrawer(),
-      appBar: const CustomAppBar(title: "My Rishta"),
+      appBar: CustomAppBar(title: "My Rishta", actions: [IconButton(onPressed: (){
+        SessionController().logoutUser(context);
+      }, icon: const Icon(Icons.logout))],),
       body: SingleChildScrollView(
         child: Column(
             children: [

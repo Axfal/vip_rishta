@@ -19,7 +19,7 @@ class SignUpState extends Equatable {
   final int numberOfBrother;
   final String height;
   final String diet;
-  final String hobbies;
+  final List<String> hobbies;
   final String qualification;
   final String fieldOfStudy;
   final String university;
@@ -52,7 +52,7 @@ class SignUpState extends Equatable {
     this.numberOfBrother = 0,
     this.height = '',
     this.diet = '',
-    this.hobbies = '',
+    this.hobbies = const [],
     this.qualification = '',
     this.fieldOfStudy = '',
     this.university = '',
@@ -86,7 +86,7 @@ class SignUpState extends Equatable {
     int? numberOfBrother,
     String? height,
     String? diet,
-    String? hobbies,
+    List<String>? hobbies,
     String? qualification,
     String? fieldOfStudy,
     String? university,

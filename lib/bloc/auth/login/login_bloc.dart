@@ -6,6 +6,8 @@ import 'package:rishta_app/data/response/api_response.dart';
 import 'package:rishta_app/model/auth/user_model.dart';
 import 'package:rishta_app/repo/auth/auth_api_repo.dart';
 
+import '../../../services/user_session.dart';
+
 part 'login_event.dart';
 part 'login_state.dart';
 
@@ -17,6 +19,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<MobileChangeEvent>(_onMobileChange);
     on<PasswordChangeEvent>(_onPasswordChange);
     on<SubmitCredentials>(_onSubmitCredential);
+    on<ResetApiResponse>((event, emit) {
+      emit(state.copyWith(apiResponse: ApiResponse.completed('')));
+    });
   }
 
   void _onEmailChange(EmailChangeEvent event, Emitter<LoginState> emit) {
@@ -39,9 +44,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
     try {
       final Map<String, dynamic> data = {
-        if (state.email.isNotEmpty) "email": state.email,
+        if (state.email.isNotEmpty) "username": state.email,
         if (state.email.isEmpty && state.mobile.isNotEmpty)
-          "mobile": state.mobile,
+          "username": state.mobile,
         "password": state.password,
       };
 
@@ -59,6 +64,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (response['success'] == true && response['user'] != null) {
         final userModel = UserModel.fromJson(response);
 
+        await SessionController().saveUserInPreference(userModel);
+
         emit(
           state.copyWith(
             userModel: userModel,
@@ -67,14 +74,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             ),
             email: '',
             mobile: '',
+            password: '',
           ),
         );
       } else {
         emit(
           state.copyWith(
-            apiResponse: ApiResponse.error(
-              response['message'] ?? "Login failed",
-            ),
+            apiResponse: ApiResponse.error(response['error'] ?? "Login failed"),
             email: '',
             mobile: '',
             password: '',

@@ -133,7 +133,7 @@ class DietChangeEvent extends SignUpEvent {
 }
 
 class HobbiesChangeEvent extends SignUpEvent {
-  final String hobbies;
+  final List<String> hobbies;
   const HobbiesChangeEvent({required this.hobbies});
   @override
   List<Object?> get props => [hobbies];

@@ -4,7 +4,6 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:rishta_app/data/response/api_response.dart';
 import 'package:rishta_app/repo/auth/auth_api_repo.dart';
-
 part 'sign_up_event.dart';
 part 'sign_up_state.dart';
 
@@ -42,7 +41,6 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     on<MaritalStatusChangeEvent>(_onMaritalStatusChange);
     on<ChildrenChangeEvent>(_onChildrenChange);
     on<PasswordChangeEvent>(_onPasswordChange);
-
     on<SubmitSignUpEvent>(_onSubmitSignUp);
   }
 
@@ -203,7 +201,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
         "number_of_brother": state.numberOfBrother,
         "height": state.height,
         "diet": state.diet,
-        "hobbies": state.hobbies,
+        "hobbies": state.hobbies.join(', '),
         "qualification": state.qualification,
         "field_of_study": state.fieldOfStudy,
         "university": state.university,
