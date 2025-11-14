@@ -7,6 +7,9 @@ class ApiResponse<T> {
 
   const ApiResponse._({required this.status, this.data, this.message});
 
+  const ApiResponse.initial()
+    : this._(status: Status.initial, data: null, message: null);
+
   const ApiResponse.loading() : this._(status: Status.loading);
 
   const ApiResponse.completed(T data)

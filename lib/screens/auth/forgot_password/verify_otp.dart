@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:rishta_app/bloc/auth/forgot_password/forgot_password_bloc.dart';
 import 'package:rishta_app/core/constants/color/app_color.dart';
 import 'package:rishta_app/core/constants/text/app_text.dart';
 import 'package:rishta_app/core/route/routes_name.dart';
+import 'package:rishta_app/services/flush_bar_servces.dart';
+
+import '../../../data/response/status.dart';
 
 class VerifyOtp extends StatefulWidget {
   const VerifyOtp({super.key});
@@ -26,6 +31,8 @@ class _VerifyOtpState extends State<VerifyOtp> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final ForgotPasswordBloc forgotPassword = context
+        .read<ForgotPasswordBloc>();
 
     return Scaffold(
       body: Container(
@@ -69,7 +76,7 @@ class _VerifyOtpState extends State<VerifyOtp> {
                     style: GoogleFonts.poppins(
                       fontSize: 14,
                       fontWeight: FontWeight.w300,
-                      color: AppColors.white.withOpacity(0.85),
+                      color: AppColors.white.withValues(alpha: 0.85),
                     ),
                   ).animate().fade(duration: 1100.ms).moveY(begin: 18, end: 0),
 
@@ -88,9 +95,13 @@ class _VerifyOtpState extends State<VerifyOtp> {
                       borderRadius: BorderRadius.circular(12),
                       fieldHeight: 50,
                       fieldWidth: 45,
-                      activeFillColor: AppColors.white.withOpacity(0.2),
-                      inactiveFillColor: AppColors.white.withOpacity(0.15),
-                      selectedFillColor: AppColors.white.withOpacity(0.25),
+                      activeFillColor: AppColors.white.withValues(alpha: 0.2),
+                      inactiveFillColor: AppColors.white.withValues(
+                        alpha: 0.15,
+                      ),
+                      selectedFillColor: AppColors.white.withValues(
+                        alpha: 0.25,
+                      ),
                       activeColor: AppColors.white,
                       selectedColor: AppColors.white,
                       inactiveColor: AppColors.white,
@@ -101,56 +112,93 @@ class _VerifyOtpState extends State<VerifyOtp> {
                       fontWeight: FontWeight.w600,
                       fontSize: 18,
                     ),
-                    onChanged: (value) {},
+                    onChanged: (value) {
+                      forgotPassword.add(OTPChangeEvent(otp: value));
+                    },
                   ).animate().fade(duration: 900.ms).moveY(begin: 10, end: 0),
 
                   const SizedBox(height: 30),
 
                   /// Verify Button
-                  GestureDetector(
-                    onTap: () {
-                      if (otpController.text.length != 6) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Please enter a valid 6-digit code'),
-                          ),
+                  BlocConsumer<ForgotPasswordBloc, ForgotPasswordState>(
+                    listenWhen: (prev, curr) =>
+                        prev.apiResponse.status != curr.apiResponse.status,
+                    listener: (context, state) {
+                      if (state.apiResponse.status == Status.error) {
+                        FlushbarService.showError(
+                          context,
+                          state.apiResponse.message ?? "Something went wrong",
                         );
-                        return;
+                      } else if (state.apiResponse.status == Status.completed &&
+                          state.apiResponse.data != null &&
+                          state.apiResponse.data!.isNotEmpty) {
+                        FlushbarService.showSuccess(
+                          context,
+                          state.apiResponse.data ??
+                              "OTP Verified Successfully!",
+                        );
+
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          RoutesName.home,
+                          (route) => false,
+                        );
                       }
+                    },
+                    builder: (context, state) {
+                      final loading =
+                          state.apiResponse.status == Status.loading;
 
-                      // TODO: Add your OTP verification logic here
+                      return GestureDetector(
+                        onTap: loading
+                            ? null
+                            : () {
+                                if (otpController.text.length != 6) {
+                                  FlushbarService.showError(
+                                    context,
+                                    "Please enter a valid 6-digit OTP.",
+                                  );
+                                  return;
+                                }
 
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        RoutesName.home,
-                        (route) => false,
+                                forgotPassword.add(const VerifyOTPEvent());
+                              },
+                        child: AnimatedContainer(
+                          duration: 400.ms,
+                          height: 50,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: AppColors.white.withValues(alpha: 0.95),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.white.withValues(alpha: 0.2),
+                                blurRadius: 6,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          alignment: Alignment.center,
+                          child: loading
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    color: AppColors.primaryColor,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : Text(
+                                  "Verify",
+                                  style: GoogleFonts.poppins(
+                                    color: AppColors.primaryColor,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                        ),
                       );
                     },
-                    child: AnimatedContainer(
-                      duration: 400.ms,
-                      height: 50,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: AppColors.white.withOpacity(0.95),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.white.withOpacity(0.2),
-                            blurRadius: 6,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        "Verify",
-                        style: GoogleFonts.poppins(
-                          color: AppColors.primaryColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
                   ).animate().fade(duration: 1000.ms).moveY(begin: 10, end: 0),
 
                   const SizedBox(height: 24),
@@ -162,13 +210,18 @@ class _VerifyOtpState extends State<VerifyOtp> {
                       Text(
                         "Didn't receive the code?",
                         style: AppText.caption.copyWith(
-                          color: AppColors.white.withOpacity(0.85),
+                          color: AppColors.white.withValues(alpha: 0.85),
                         ),
                       ),
                       const SizedBox(width: 4),
                       GestureDetector(
                         onTap: () {
-                          // TODO: Add resend OTP logic here
+                          forgotPassword.add(const RequestOTPEvent());
+
+                          FlushbarService.showSuccess(
+                            context,
+                            "OTP sent again!",
+                          );
                         },
                         child: Text(
                           "Resend",
