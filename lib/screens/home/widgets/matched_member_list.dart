@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rishta_app/core/constants/color/app_color.dart';
 import 'package:rishta_app/screens/home/widgets/all_cards_page.dart';
@@ -22,7 +23,7 @@ class MatchedMemberList extends StatelessWidget {
     final members = [
       {
         "image":
-        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80",
         "name": "Ayesha",
         "age": 20,
         "height": "5'4",
@@ -31,7 +32,7 @@ class MatchedMemberList extends StatelessWidget {
       },
       {
         "image":
-        "https://images.unsplash.com/photo-1722354980566-ec247cb4f1a8?q=80&w=627&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1722354980566-ec247cb4f1a8?q=80&w=627&auto=format&fit=crop",
         "name": "Ali",
         "age": 22,
         "height": "5'6",
@@ -40,7 +41,7 @@ class MatchedMemberList extends StatelessWidget {
       },
       {
         "image":
-        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80",
         "name": "Hina",
         "age": 23,
         "height": "5'5",
@@ -49,7 +50,7 @@ class MatchedMemberList extends StatelessWidget {
       },
       {
         "image":
-        "https://images.unsplash.com/photo-1722354980566-ec247cb4f1a8?q=80&w=627&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1722354980566-ec247cb4f1a8?q=80&w=627&auto=format&fit=crop",
         "name": "Umer",
         "age": 20,
         "height": "5'4",
@@ -60,48 +61,46 @@ class MatchedMemberList extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-      ),
+      decoration: BoxDecoration(color: Colors.white),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           /// ------------------ Title ------------------
           Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                listName,
-                style: GoogleFonts.poppins(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.primaryColor,
-                ),
-              ),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    listName,
+                    style: GoogleFonts.poppins(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
 
-              const SizedBox(height: 3),
+                  const SizedBox(height: 3),
 
-              Text(
-                listDescription,
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  color: Colors.black54,
-                ),
-              ),
+                  Text(
+                    listDescription,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12.sp,
+                      color: Colors.black54,
+                    ),
+                  ),
 
-              const SizedBox(height: 8),
+                  const SizedBox(height: 8),
 
-              /// Gradient Underline
-              Container(
-                height: 3,
-                width: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  gradient: AppColors.Linear_gradient,
-                ),
-              ),
-            ],
-          )
+                  /// Gradient Underline
+                  Container(
+                    height: 3,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: AppColors.Linear_gradient,
+                    ),
+                  ),
+                ],
+              )
               .animate()
               .fade(duration: 500.ms)
               .moveY(begin: 12, end: 0, duration: 600.ms),
@@ -120,22 +119,23 @@ class MatchedMemberList extends StatelessWidget {
 
                 return Padding(
                   padding: const EdgeInsets.only(right: 14),
-                  child: ProfileCard(
-                    imagePath: m["image"] as String,
-                    name: m["name"]! as String,
-                    age: m["age"] ! as int,
-                    height: m["height"] ! as String,
-                    language: m["language"] ! as String,
-                    location: m["location"] ! as String,
-                  )
-                      .animate()
-                      .fade(duration: 600.ms)
-                      .scale(
-                    begin: const Offset(0.95, 0.95),
-                    end: const Offset(1, 1),
-                    duration: 500.ms,
-                  )
-                      .moveX(begin: 20, end: 0),
+                  child:
+                      ProfileCard(
+                            imagePath: m["image"] as String,
+                            name: m["name"]! as String,
+                            age: m["age"]! as int,
+                            height: m["height"]! as String,
+                            language: m["language"]! as String,
+                            location: m["location"]! as String,
+                          )
+                          .animate()
+                          .fade(duration: 600.ms)
+                          .scale(
+                            begin: const Offset(0.95, 0.95),
+                            end: const Offset(1, 1),
+                            duration: 500.ms,
+                          )
+                          .moveX(begin: 20, end: 0),
                 );
               },
             ),
@@ -159,17 +159,15 @@ class MatchedMemberList extends StatelessWidget {
               child: Text(
                 "See all",
                 style: GoogleFonts.poppins(
-                  fontSize: 15,
+                  fontSize: 14.sp,
                   fontWeight: FontWeight.w500,
                   foreground: Paint()
-                    ..shader = AppColors.Linear_gradient
-                        .createShader(const Rect.fromLTWH(0, 0, 200, 20)),
+                    ..shader = AppColors.Linear_gradient.createShader(
+                      const Rect.fromLTWH(0, 0, 200, 20),
+                    ),
                 ),
               ),
-            )
-                .animate()
-                .fade(duration: 600.ms)
-                .moveY(begin: 10, end: 0),
+            ).animate().fade(duration: 600.ms).moveY(begin: 10, end: 0),
           ),
         ],
       ),

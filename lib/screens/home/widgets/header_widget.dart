@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -146,8 +147,8 @@ class HeaderWidget extends StatelessWidget {
                                   Expanded(
                                     child: Text(
                                       "$userName, $age",
-                                      style: GoogleFonts.playfairDisplay(
-                                        fontSize: 22,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 18.sp,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
                                       ),
@@ -170,9 +171,9 @@ class HeaderWidget extends StatelessWidget {
 
                               Row(
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.location_on,
-                                    size: 16,
+                                    size: 16.sp,
                                     color: Colors.white70,
                                   ),
                                   const SizedBox(width: 4),
@@ -180,9 +181,9 @@ class HeaderWidget extends StatelessWidget {
                                     child: Text(
                                       "Lives in $location",
                                       style: GoogleFonts.poppins(
-                                        fontSize: 14,
+                                        fontSize: 12.sp,
                                         fontWeight: FontWeight.w500,
-                                        color: Colors.white.withOpacity(0.95),
+                                        color: Colors.white.withValues(alpha: 0.95),
                                       ),
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -195,7 +196,7 @@ class HeaderWidget extends StatelessWidget {
                                 Text(
                                   tagline,
                                   style: GoogleFonts.poppins(
-                                    fontSize: 14,
+                                    fontSize: 12.sp,
                                     fontStyle: FontStyle.italic,
                                     color: Colors.white,
                                   ),

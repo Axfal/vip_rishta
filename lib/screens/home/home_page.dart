@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:rishta_app/screens/home/widgets/header_widget.dart';
 import 'package:rishta_app/screens/home/widgets/matched_member_list.dart';
 import '../../core/constants/color/app_color.dart';
-import '../../global_widgets/PrimaryWidgets/app_bar.dart';
 import '../../global_widgets/custom_drawer/custom_drawer.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,12 +22,8 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
         title: Text(
-          "Setting",
+          "Pakay Rishtay",
           style: GoogleFonts.poppins(
             fontSize: 18.sp,
             fontWeight: FontWeight.w600,
