@@ -1,6 +1,8 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:rishta_app/core/constants/color/app_color.dart';
@@ -11,17 +13,92 @@ import 'package:rishta_app/screens/matches/matches_page.dart';
 import 'package:rishta_app/screens/inbox/inbox_page.dart';
 import 'package:rishta_app/partner_prefernces/partner_prefences.dart';
 import 'package:rishta_app/screens/my_profile/widgets/help_and_support/help_and_support.dart';
+import 'package:rishta_app/screens/setting/setting.dart';
+
+import '../../screens/chats/chats_page.dart';
+import '../../screens/notification/notification_screen.dart';
+import '../../services/user_session.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
 
   void _navigate(BuildContext context, Widget page) {
-    Navigator.of(context).pushReplacement(
+    Navigator.of(context).push(
       PageRouteBuilder(
         pageBuilder: (_, __, ___) => page,
         transitionsBuilder: (_, animation, __, child) =>
             FadeTransition(opacity: animation, child: child),
         transitionDuration: const Duration(milliseconds: 250),
+      ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => FadeInDown(
+        duration: const Duration(milliseconds: 400),
+        child: AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.r),
+          ),
+          title: Row(
+            children: [
+              Icon(FontAwesomeIcons.exclamationTriangle, color: Colors.red),
+              SizedBox(width: 10.w),
+              Text(
+                "Confirm Logout",
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18.sp,
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            "Are you sure you want to logout?",
+            style: GoogleFonts.poppins(fontSize: 14.sp),
+          ),
+          actionsPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.grey.shade200,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+              ),
+              child: Text(
+                "Cancel",
+                style: GoogleFonts.poppins(
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                SessionController().logoutUser(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+              ),
+              child: Text(
+                "Logout",
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -139,59 +216,50 @@ class CustomDrawer extends StatelessWidget {
                 _DrawerItem(
                   icon: Icons.person,
                   title: 'Profile',
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyProfile())),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyProfile()),
+                  ),
                 ),
                 _DrawerItem(
                   icon: Icons.person_search_outlined,
                   title: 'Matches',
                   onTap: () {
-                    Provider.of<DashboardProvider>(
-                      context,
-                      listen: false,
-                    ).updateSelectedIndex(1);
-                    _navigate(context, const DashboardPage());
+
+                    _navigate(context, const MatchesPage());
                   },
                 ),
                 _DrawerItem(
-                  icon: Icons.email_outlined,
-                  title: 'Inbox',
+                  icon: FontAwesomeIcons.message,
+                  title: 'Chat',
                   onTap: () {
-                    Provider.of<DashboardProvider>(
-                      context,
-                      listen: false,
-                    ).updateSelectedIndex(2);
-                    _navigate(context, const DashboardPage());
+                    _navigate(context, const ChatsPage());
                   },
                 ),
                 _DrawerItem(
                   icon: Icons.notifications_outlined,
                   title: 'Notifications',
                   onTap: () {
-                    Provider.of<DashboardProvider>(
-                      context,
-                      listen: false,
-                    ).updateSelectedIndex(3);
-                    _navigate(context, const DashboardPage());
+                    _navigate(context, NotificationScreen());
                   },
-                ),
-                _DrawerItem(
-                  icon: Icons.perm_contact_cal_outlined,
-                  title: 'Partner Preferences',
-                  onTap: () => _navigate(context, PartnerPreferences()),
-                ),
-                _DrawerItem(
-                  icon: Icons.support_agent_outlined,
-                  title: 'Help & Support',
-                  onTap: () => _navigate(context, HelpAndSupport()),
                 ),
                 _DrawerItem(
                   icon: Icons.settings_outlined,
                   title: 'Settings',
                   onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Setting()),
+                    );
                   },
                 ),
+                _DrawerItem(
+                  icon: FontAwesomeIcons.signOut,
+                  title: 'Logout',
+                  onTap: () => _showLogoutDialog(context),
+                ),
 
-                SizedBox(height: 100.h),
+                SizedBox(height: 150.h),
                 Center(
                   child: Text(
                     "© IT Genesis",

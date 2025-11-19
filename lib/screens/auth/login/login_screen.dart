@@ -199,10 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           alignment: Alignment.centerRight,
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                RoutesName.forgot,
-                              );
+                              Navigator.pushNamed(context, RoutesName.forgot);
                             },
                             child: Text(
                               "Forgot Password?",

@@ -77,7 +77,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 const SizedBox(height: 22),
 
                 Text(
-                      "VIP Rishta",
+                      "پکے رشتے",
                       style: GoogleFonts.playfairDisplay(
                         fontSize: 38,
                         fontWeight: FontWeight.w700,

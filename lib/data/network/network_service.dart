@@ -116,11 +116,34 @@ class NetworkApiService implements BaseApiServices {
   Future<dynamic> putApi(
     String url,
     dynamic data, {
-    Map<String, String>? headers,
+    File? file,
+   required String token,
+        Map<String, String>? headers,
   }) async {
     if (kDebugMode) print('PUT $url');
 
     try {
+      if (file != null) {
+        var request = http.MultipartRequest('PUT', Uri.parse(url));
+
+        request.headers.addAll(
+          getHeaders(customHeaders: headers ?? {"Accept": "application/json", "Authorization": "Bearer $token",}),
+        );
+
+        data.forEach((key, value) {
+          request.fields[key] = value.toString();
+        });
+
+        request.files.add(
+          await http.MultipartFile.fromPath('image', file.path),
+        );
+
+        var streamedResponse = await request.send().timeout(timeoutDuration);
+        var response = await http.Response.fromStream(streamedResponse);
+
+        return _returnResponse(response);
+      }
+
       final response = await http
           .put(
             Uri.parse(url),
@@ -128,6 +151,7 @@ class NetworkApiService implements BaseApiServices {
             body: jsonEncode(data),
           )
           .timeout(timeoutDuration);
+
       return _returnResponse(response);
     } on SocketException {
       throw NoInternetException('No Internet Connection');

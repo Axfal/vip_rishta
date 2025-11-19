@@ -2,7 +2,10 @@ class UserProfileModel {
   final bool success;
   final User user;
 
-  const UserProfileModel({this.success = false, this.user = const User()});
+  const UserProfileModel({
+    this.success = false,
+    this.user = const User(),
+  });
 
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
     return UserProfileModel(
@@ -12,7 +15,10 @@ class UserProfileModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {'success': success, 'user': user.toJson()};
+    return {
+      'success': success,
+      'user': user.toJson(),
+    };
   }
 }
 
