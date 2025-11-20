@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:rishta_app/core/constants/color/app_color.dart';
+import 'package:rishta_app/screens/profile_detail/profile_detail_screen.dart';
 
 class MatchesPage extends StatefulWidget {
   final bool isPremiumUser;
@@ -85,14 +86,14 @@ class _MatchesPageState extends State<MatchesPage> {
                     padding: const EdgeInsets.all(22),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30),
-                      color: Colors.white.withOpacity(0.92),
+                      color: Colors.white.withValues(alpha: 0.92),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.4),
+                        color: Colors.white.withValues(alpha: 0.4),
                         width: 1.5,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.10),
+                          color: Colors.black.withValues(alpha: 0.10),
                           blurRadius: 22,
                           offset: const Offset(0, 8),
                         ),
@@ -259,114 +260,124 @@ class _MatchesPageState extends State<MatchesPage> {
   Widget _partnerCard(Map<String, dynamic> m) {
     bool isLocked = m["premium"] && !widget.isPremiumUser;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 14),
-      height: 480.h,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.20),
-            blurRadius: 18,
-            offset: const Offset(0, 7),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: Stack(
-          children: [
-            // ------------------- IMAGE -------------------
-            Positioned.fill(
-              child: Image.network(
-                m["image"],
-                fit: BoxFit.cover,
-                color: isLocked ? Colors.black.withOpacity(0.55) : null,
-                colorBlendMode: isLocked ? BlendMode.darken : BlendMode.srcOver,
-              ),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ProfileDetailScreen()),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 14),
+        height: 480.h,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.20),
+              blurRadius: 18,
+              offset: const Offset(0, 7),
             ),
-
-            // ------------------- BLUR WHEN LOCKED -------------------
-            if (isLocked)
-              Positioned.fill(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-                  child: Container(color: Colors.transparent),
-                ),
-              ),
-
-            // ------------------- GRADIENT -------------------
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.black.withOpacity(0.85),
-                      Colors.transparent,
-                    ],
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                  ),
-                ),
-              ),
-            ),
-
-            // ------------------- PROFILE DETAILS -------------------
-            Positioned(
-              bottom: 20,
-              left: 18,
-              right: 18,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    m["name"],
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    "${m["age"]} yrs • ${m["city"]} • ${m["caste"]}",
-                    style: GoogleFonts.poppins(
-                      color: Colors.white70,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    m["profession"],
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 15,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // ------------------- LOCK ICON -------------------
-            if (isLocked)
-              Center(
-                child: Container(
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    color: Colors.black26,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    FontAwesomeIcons.lock,
-                    color: Colors.white,
-                    size: 36,
-                  ),
-                ),
-              ),
           ],
         ),
-      ),
-    ).animate().fadeIn(duration: 350.ms).slide(begin: const Offset(0, 0.2));
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: Stack(
+            children: [
+              // ------------------- IMAGE -------------------
+              Positioned.fill(
+                child: Image.network(
+                  m["image"],
+                  fit: BoxFit.cover,
+                  color: isLocked ? Colors.black.withValues(alpha: 0.55) : null,
+                  colorBlendMode: isLocked
+                      ? BlendMode.darken
+                      : BlendMode.srcOver,
+                ),
+              ),
+
+              // ------------------- BLUR WHEN LOCKED -------------------
+              if (isLocked)
+                Positioned.fill(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+                    child: Container(color: Colors.transparent),
+                  ),
+                ),
+
+              // ------------------- GRADIENT -------------------
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.black.withValues(alpha: 0.85),
+                        Colors.transparent,
+                      ],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                    ),
+                  ),
+                ),
+              ),
+
+              // ------------------- PROFILE DETAILS -------------------
+              Positioned(
+                bottom: 20,
+                left: 18,
+                right: 18,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      m["name"],
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      "${m["age"]} yrs • ${m["city"]} • ${m["caste"]}",
+                      style: GoogleFonts.poppins(
+                        color: Colors.white70,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      m["profession"],
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // ------------------- LOCK ICON -------------------
+              if (isLocked)
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: Colors.black26,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      FontAwesomeIcons.lock,
+                      color: Colors.white,
+                      size: 36,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ).animate().fadeIn(duration: 350.ms).slide(begin: const Offset(0, 0.2)),
+    );
   }
 
   @override
