@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
-import 'package:rishta_app/screens/dashboard/provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rishta_app/bloc/profile/profile_bloc.dart';
 import 'core/route/routes.dart';
 import 'core/route/routes_name.dart';
 import 'dependency_indjection/locator.dart';
+import 'bloc/match/match_bloc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,18 +18,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => DashboardProvider())],
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<MatchBloc>(
+          create: (_) => MatchBloc(activityApiRepo: getIt()),
+        ),
+        BlocProvider<ProfileBloc>(
+          create: (_) => ProfileBloc(profileApiRepo: getIt()),
+        ),
+      ],
       child: ScreenUtilInit(
         designSize: const Size(360, 690),
         minTextAdapt: true,
         splitScreenMode: true,
-        builder: (context, child) {
+        builder: (_, __) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'VIP Rishta',
+            title: 'Pakay Rishtay',
             themeMode: ThemeMode.dark,
-            supportedLocales: const [Locale('en'), Locale('es')],
             initialRoute: RoutesName.splash,
             onGenerateRoute: Routes.generateRoute,
           );

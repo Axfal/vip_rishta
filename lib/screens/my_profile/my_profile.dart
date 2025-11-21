@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rishta_app/core/constants/app_urls/api_urls.dart';
@@ -104,13 +103,6 @@ class _MyProfileState extends State<MyProfile> {
     "Dancing",
   ];
   List<String> selectedHobbies = [];
-
-  @override
-  void initState() {
-    super.initState();
-    profileBloc = ProfileBloc(profileApiRepo: getIt<ProfileApiRepo>());
-    profileBloc.add(GetProfileEvent());
-  }
 
   @override
   void dispose() {
@@ -405,373 +397,366 @@ class _MyProfileState extends State<MyProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: profileBloc,
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.black),
-            onPressed: () => Navigator.pop(context),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            size: 18,
+            color: Colors.black,
           ),
-          title: Text(
-            "Profile",
-            style: GoogleFonts.poppins(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            ),
-          ),
-          centerTitle: true,
+          onPressed: () => Navigator.pop(context),
         ),
+        title: Text(
+          "Profile",
+          style: GoogleFonts.poppins(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w600,
+            color: Colors.black,
+          ),
+        ),
+        centerTitle: true,
+      ),
 
-        body: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: BoxDecoration(color: Colors.white),
-          child: BlocConsumer<ProfileBloc, ProfileState>(
-            listener: (context, state) {
-              if (state.apiResponse.status == Status.error) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.apiResponse.message ?? 'Error'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
-              _fillControllersFromModel();
-            },
-            builder: (context, state) {
-              if (state.apiResponse.status == Status.loading) {
-                return const Center(
-                  child: CupertinoActivityIndicator(color: Colors.black26),
-                );
-              }
-
-              if (state.apiResponse.status == Status.error) {
-                return Center(
-                  child: Text(
-                    state.apiResponse.message ?? "Failed to load profile",
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
-                  ),
-                );
-              }
-
-              final user = state.userProfileModel.user;
-
-              return SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 40,
-                ),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      /// Profile Image
-                      Stack(
-                        children: [
-                          CircleAvatar(
-                            radius: 90,
-                            backgroundColor: Colors.white24,
-                            child: ClipOval(
-                              child: _pickedImage != null
-                                  ? Image.file(
-                                      _pickedImage!,
-                                      fit: BoxFit.cover,
-                                      width: 150,
-                                      height: 150,
-                                    )
-                                  : (user.image.isNotEmpty
-                                        ? Image.network(
-                                            APIUrls.baseUrl + user.image,
-                                            fit: BoxFit.cover,
-                                            width: 150,
-                                            height: 150,
-                                            errorBuilder: (c, e, st) =>
-                                                const Icon(
-                                                  Icons.person,
-                                                  size: 60,
-                                                  color: Colors.white70,
-                                                ),
-                                          )
-                                        : Image.asset(
-                                            'assets/logo/vip_rishta.png',
-                                            fit: BoxFit.cover,
-                                            width: 150,
-                                            height: 150,
-                                            errorBuilder: (c, e, st) =>
-                                                const Icon(
-                                                  Icons.person,
-                                                  size: 60,
-                                                  color: Colors.white70,
-                                                ),
-                                          )),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 25,
-                            right: 15,
-                            child: GestureDetector(
-                              onTap: _pickImage,
-                              child: Container(
-                                height: 40,
-                                width: 40,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.black87.withValues(
-                                      alpha: .77,
-                                    ),
-                                  ),
-                                  color: AppColors.white,
-                                ),
-                                padding: const EdgeInsets.all(6),
-                                child: Icon(
-                                  Icons.edit,
-                                  size: 22,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-
-                      /// Name
-                      Text(
-                        "${firstNameController.text} ${lastNameController.text}",
-                        style: GoogleFonts.poppins(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-
-                      /// Fields
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: firstNameController,
-                        hintText: "First Name",
-                        validator: (v) =>
-                            v == null || v.isEmpty ? "Required" : null,
-                      ),
-                      const SizedBox(height: 10),
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: lastNameController,
-                        hintText: "Last Name",
-                        validator: (v) =>
-                            v == null || v.isEmpty ? "Required" : null,
-                      ),
-                      const SizedBox(height: 10),
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: genderController,
-                        hintText: "Gender",
-                      ),
-                      const SizedBox(height: 10),
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: dobController,
-                        hintText: "Date of Birth",
-                      ),
-                      const SizedBox(height: 10),
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: religionController,
-                        hintText: "Religion",
-                      ),
-                      const SizedBox(height: 10),
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: communityController,
-                        hintText: "Community",
-                      ),
-                      const SizedBox(height: 10),
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: countryController,
-                        hintText: "Country",
-                      ),
-                      const SizedBox(height: 10),
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: stateController,
-                        hintText: "State",
-                      ),
-                      const SizedBox(height: 10),
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: cityController,
-                        hintText: "City",
-                      ),
-                      const SizedBox(height: 10),
-
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: heightController,
-                        hintText: "Select Height",
-                        isDropdown: true,
-                        onTap: () => _openSinglePicker(
-                          options: heightOptions,
-                          controller: heightController,
-                          title: "Select Height",
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: dietController,
-                        hintText: "Select Diet",
-                        isDropdown: true,
-                        onTap: () => _openSinglePicker(
-                          options: dietOptions,
-                          controller: dietController,
-                          title: "Select Diet",
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: hobbiesController,
-                        hintText: "Select Hobbies",
-                        isDropdown: true,
-                        onTap: _openHobbiesPicker,
-                      ),
-                      const SizedBox(height: 10),
-
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: qualificationController,
-                        hintText: "Qualification",
-                      ),
-                      const SizedBox(height: 10),
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: fieldOfStudyController,
-                        hintText: "Field of Study",
-                      ),
-                      const SizedBox(height: 10),
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: universityController,
-                        hintText: "University",
-                      ),
-                      const SizedBox(height: 10),
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: passingYearController,
-                        hintText: "Passing Year",
-                      ),
-                      const SizedBox(height: 10),
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: jobController,
-                        hintText: "Job",
-                      ),
-                      const SizedBox(height: 10),
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: workLocationController,
-                        hintText: "Work Location",
-                        isDropdown: true,
-                        onTap: () => _openSinglePicker(
-                          options: [
-                            'Office',
-                            'Home',
-                            'School',
-                            'Hospital',
-                            'Factory',
-                            'Other',
-                          ],
-                          controller: workLocationController,
-                          title: "Select Work Location",
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: jobTypeController,
-                        hintText: "Job Type",
-                        isDropdown: true,
-                        onTap: () => _openSinglePicker(
-                          options: [
-                            'Government',
-                            'Private',
-                            'Self-employed',
-                            'Freelancer',
-                            'Unemployed',
-                          ],
-                          controller: jobTypeController,
-                          title: "Select Job Type",
-                        ),
-                      ),
-                      const SizedBox(height: 40),
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: maritalStatusController,
-                        hintText: "Select Marital Status",
-                        isDropdown: true,
-                        onTap: () => _openSinglePicker(
-                          options: maritalStatusOptions,
-                          controller: maritalStatusController,
-                          title: "Marital Status",
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      CustomTextField(
-                        borderColor: Colors.black54,
-                        controller: numberOfChildrenController,
-                        hintText: "Select number of children",
-                        isDropdown: true,
-                        onTap: () => _openSinglePicker(
-                          options: numberOfChildrenOptions,
-                          controller: numberOfChildrenController,
-                          title: "Number of Children",
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-
-                      SafeArea(
-                        child: GestureDetector(
-                          onTap: _onSavePressed,
-                          child: Container(
-                            height: 50.h,
-                            width: 150.w,
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryColor.withValues(
-                                alpha: 0.95,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            alignment: Alignment.center,
-                            child: state.apiResponse.status == Status.loading
-                                ? const CircularProgressIndicator()
-                                : Text(
-                                    "Save",
-                                    style: GoogleFonts.poppins(
-                                      color: AppColors.white,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(color: Colors.white),
+        child: BlocConsumer<ProfileBloc, ProfileState>(
+          listener: (context, state) {
+            if (state.apiResponse.status == Status.error) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.apiResponse.message ?? 'Error'),
+                  backgroundColor: Colors.red,
                 ),
               );
-            },
-          ),
+            }
+            _fillControllersFromModel();
+          },
+          builder: (context, state) {
+            if (state.apiResponse.status == Status.loading) {
+              return const Center(
+                child: CupertinoActivityIndicator(color: Colors.black26),
+              );
+            }
+
+            if (state.apiResponse.status == Status.error) {
+              return Center(
+                child: Text(
+                  state.apiResponse.message ?? "Failed to load profile",
+                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
+                ),
+              );
+            }
+
+            final user = state.userProfileModel.user;
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    /// Profile Image
+                    Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 90,
+                          backgroundColor: Colors.white24,
+                          child: ClipOval(
+                            child: _pickedImage != null
+                                ? Image.file(
+                                    _pickedImage!,
+                                    fit: BoxFit.cover,
+                                    width: 150,
+                                    height: 150,
+                                  )
+                                : (user.image.isNotEmpty
+                                      ? Image.network(
+                                          APIUrls.baseUrl + user.image,
+                                          fit: BoxFit.cover,
+                                          width: 150,
+                                          height: 150,
+                                          errorBuilder: (c, e, st) =>
+                                              const Icon(
+                                                Icons.person,
+                                                size: 60,
+                                                color: Colors.white70,
+                                              ),
+                                        )
+                                      : Image.asset(
+                                          'assets/logo/vip_rishta.png',
+                                          fit: BoxFit.cover,
+                                          width: 150,
+                                          height: 150,
+                                          errorBuilder: (c, e, st) =>
+                                              const Icon(
+                                                Icons.person,
+                                                size: 60,
+                                                color: Colors.white70,
+                                              ),
+                                        )),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 25,
+                          right: 15,
+                          child: GestureDetector(
+                            onTap: _pickImage,
+                            child: Container(
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.black87.withValues(alpha: .77),
+                                ),
+                                color: AppColors.white,
+                              ),
+                              padding: const EdgeInsets.all(6),
+                              child: Icon(
+                                Icons.edit,
+                                size: 22,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    /// Name
+                    Text(
+                      "${firstNameController.text} ${lastNameController.text}",
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+
+                    /// Fields
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: firstNameController,
+                      hintText: "First Name",
+                      validator: (v) =>
+                          v == null || v.isEmpty ? "Required" : null,
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: lastNameController,
+                      hintText: "Last Name",
+                      validator: (v) =>
+                          v == null || v.isEmpty ? "Required" : null,
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: genderController,
+                      hintText: "Gender",
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: dobController,
+                      hintText: "Date of Birth",
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: religionController,
+                      hintText: "Religion",
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: communityController,
+                      hintText: "Community",
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: countryController,
+                      hintText: "Country",
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: stateController,
+                      hintText: "State",
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: cityController,
+                      hintText: "City",
+                    ),
+                    const SizedBox(height: 10),
+
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: heightController,
+                      hintText: "Select Height",
+                      isDropdown: true,
+                      onTap: () => _openSinglePicker(
+                        options: heightOptions,
+                        controller: heightController,
+                        title: "Select Height",
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: dietController,
+                      hintText: "Select Diet",
+                      isDropdown: true,
+                      onTap: () => _openSinglePicker(
+                        options: dietOptions,
+                        controller: dietController,
+                        title: "Select Diet",
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: hobbiesController,
+                      hintText: "Select Hobbies",
+                      isDropdown: true,
+                      onTap: _openHobbiesPicker,
+                    ),
+                    const SizedBox(height: 10),
+
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: qualificationController,
+                      hintText: "Qualification",
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: fieldOfStudyController,
+                      hintText: "Field of Study",
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: universityController,
+                      hintText: "University",
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: passingYearController,
+                      hintText: "Passing Year",
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: jobController,
+                      hintText: "Job",
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: workLocationController,
+                      hintText: "Work Location",
+                      isDropdown: true,
+                      onTap: () => _openSinglePicker(
+                        options: [
+                          'Office',
+                          'Home',
+                          'School',
+                          'Hospital',
+                          'Factory',
+                          'Other',
+                        ],
+                        controller: workLocationController,
+                        title: "Select Work Location",
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: jobTypeController,
+                      hintText: "Job Type",
+                      isDropdown: true,
+                      onTap: () => _openSinglePicker(
+                        options: [
+                          'Government',
+                          'Private',
+                          'Self-employed',
+                          'Freelancer',
+                          'Unemployed',
+                        ],
+                        controller: jobTypeController,
+                        title: "Select Job Type",
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: maritalStatusController,
+                      hintText: "Select Marital Status",
+                      isDropdown: true,
+                      onTap: () => _openSinglePicker(
+                        options: maritalStatusOptions,
+                        controller: maritalStatusController,
+                        title: "Marital Status",
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextField(
+                      borderColor: Colors.black54,
+                      controller: numberOfChildrenController,
+                      hintText: "Select number of children",
+                      isDropdown: true,
+                      onTap: () => _openSinglePicker(
+                        options: numberOfChildrenOptions,
+                        controller: numberOfChildrenController,
+                        title: "Number of Children",
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+
+                    SafeArea(
+                      child: GestureDetector(
+                        onTap: _onSavePressed,
+                        child: Container(
+                          height: 50.h,
+                          width: 150.w,
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryColor.withValues(
+                              alpha: 0.95,
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          alignment: Alignment.center,
+                          child: state.apiResponse.status == Status.loading
+                              ? const CircularProgressIndicator()
+                              : Text(
+                                  "Save",
+                                  style: GoogleFonts.poppins(
+                                    color: AppColors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

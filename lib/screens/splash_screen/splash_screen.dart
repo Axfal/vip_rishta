@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rishta_app/bloc/profile/profile_bloc.dart';
 import 'package:rishta_app/core/constants/color/app_color.dart';
 import 'package:rishta_app/services/splash_service.dart';
+
+import '../../bloc/match/match_bloc.dart';
+import '../../core/route/routes_name.dart';
+import '../../services/user_session.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,9 +21,37 @@ class _SplashScreenState extends State<SplashScreen> {
   final splashService = SplashServices();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    splashService.checkAuthentication(context);
+    _initApp();
+  }
+
+  void _initApp() async {
+    await SessionController().getUserFromPreference();
+
+    if (SessionController.isLogin) {
+      if (!mounted) return;
+      context.read<MatchBloc>().add(SuggestedMatchEvent());
+      context.read<ProfileBloc>().add(GetProfileEvent());
+      _goToHome();
+    } else {
+      _goToLogin();
+    }
+  }
+
+  void _goToHome() {
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      RoutesName.home,
+      (route) => false,
+    );
+  }
+
+  void _goToLogin() {
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      RoutesName.login,
+      (route) => false,
+    );
   }
 
   @override

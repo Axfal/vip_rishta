@@ -4,7 +4,7 @@ import 'dart:io';
 abstract class BaseApiServices {
   Future<dynamic> getApi(String url, {Map<String, String>? headers});
 
-  Future<dynamic> postApi(String url, dynamic data);
+  Future<dynamic> postApi(String url, dynamic data,  {Map<String, String>? headers});
 
   Future<dynamic> postMultipartApi(
       String url,

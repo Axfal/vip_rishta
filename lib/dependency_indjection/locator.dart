@@ -1,4 +1,6 @@
 import 'package:get_it/get_it.dart';
+import 'package:rishta_app/repo/activity/activity_api_repo.dart';
+import 'package:rishta_app/repo/activity/activity_http_api_repo.dart';
 import 'package:rishta_app/repo/auth/auth_api_repo.dart';
 import 'package:rishta_app/repo/auth/auth_http_api_repo.dart';
 import 'package:rishta_app/repo/profile/profile_http_api_repo.dart';
@@ -10,5 +12,6 @@ class ServiceLocator {
   static void setup() {
     getIt.registerLazySingleton<AuthApiRepo>(() => AuthHttpApiRepo());
     getIt.registerLazySingleton<ProfileApiRepo>(() => ProfileHttpApiRepo());
+    getIt.registerLazySingleton<ActivityApiRepo>(() => ActivityHttpApiRepo());
   }
 }

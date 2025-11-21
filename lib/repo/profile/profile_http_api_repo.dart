@@ -13,7 +13,6 @@ class ProfileHttpApiRepo extends ProfileApiRepo {
     final uri = Uri.parse(APIUrls.getProfile).replace(queryParameters: data);
 
     try {
-      // Get token from session
       final token = SessionController.user.tokens!.access.toString();
 
       final response = await apiServices.getApi(

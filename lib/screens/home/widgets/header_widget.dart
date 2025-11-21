@@ -4,23 +4,14 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
+import 'package:rishta_app/screens/premium/premium_page.dart';
 import '../../../core/constants/color/app_color.dart';
-import '../../../core/constants/text/app_text.dart';
 import '../../../core/constants/custom_button.dart';
 
 class HeaderWidget extends StatelessWidget {
-  final String imgUrl;
-  final String userName;
+  final String imgUrl, userName, location, tagline, likes, matches, views;
   final int age;
-  final String location;
-  final bool isPremium;
-  final bool isOnline;
-  final String tagline;
-
-  final String likes;
-  final String matches;
-  final String views;
+  final bool isPremium, isOnline;
 
   const HeaderWidget({
     super.key,
@@ -28,233 +19,156 @@ class HeaderWidget extends StatelessWidget {
     required this.userName,
     required this.age,
     required this.location,
-    this.isPremium = false,
-    this.isOnline = false,
-    this.tagline = '',
     required this.likes,
     required this.matches,
     required this.views,
+    this.tagline = '',
+    this.isPremium = false,
+    this.isOnline = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final h = MediaQuery.of(context).size.height;
 
     return ClipPath(
       clipper: InwardArchClipper(),
       child: Container(
-        height: size.height * 0.40,
-        width: double.infinity,
+        height: h * 0.259,
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           gradient: AppColors.Linear_gradient,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.15),
-              blurRadius: 18,
-              offset: Offset(0, 6),
+              color: Colors.black26,
+              blurRadius: 14,
+              offset: Offset(0, 4),
             ),
           ],
         ),
         child: Stack(
           children: [
-            /// Floating Hearts Background (Like Splash)
+            // Floating hearts
             Positioned(
-              top: 40,
-              left: 40,
-              child:
-              Icon(
-                Icons.favorite,
-                size: 26,
-                color: Colors.white.withValues(alpha: 0.18),
-              )
-                  .animate(onPlay: (c) => c.repeat())
-                  .moveY(begin: 0, end: -20, duration: 1800.ms)
-                  .fadeIn(),
+              top: 30,
+              left: 30,
+              child: AnimatedHeart(size: 26, alpha: .18, dy: -18),
             ),
             Positioned(
-              bottom: 60,
+              bottom: 40,
               right: 30,
-              child:
-              Icon(
-                Icons.favorite,
-                size: 32,
-                color: Colors.white.withValues(alpha: 0.14),
-              )
-                  .animate(onPlay: (c) => c.repeat())
-                  .moveY(begin: 0, end: 25, duration: 2100.ms)
-                  .fadeIn(),
+              child: AnimatedHeart(size: 32, alpha: .14, dy: 22),
             ),
 
-            /// Header Content
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              child: Column(
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      /// Profile Image
-                      Stack(
-                        children: [
-                          CircleAvatar(
-                            radius: 42,
-                            backgroundImage: AssetImage(imgUrl),
-                          )
-                              .animate()
-                              .fadeIn(duration: 600.ms)
-                              .scale(
-                            duration: 900.ms,
-                            curve: Curves.easeOutBack,
-                          ),
+            Column(
+              children: [
+                Row(
+                  children: [
+                    // Profile Picture + Online Dot
+                    Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 40,
+                          backgroundImage: AssetImage(imgUrl),
+                        ).animate().fadeIn().scale(curve: Curves.easeOutBack),
 
-                          /// Online Indicator
-                          if (isOnline)
-                            Positioned(
-                              bottom: 5,
-                              right: 5,
-                              child:
-                              Container(
-                                width: 18,
-                                height: 18,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.greenAccent,
-                                  border: Border.all(
+                        if (isOnline)
+                          Positioned(bottom: 4, right: 4, child: OnlineDot()),
+                      ],
+                    ),
+
+                    const SizedBox(width: 10),
+
+                    // User Info
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  "$userName, $age",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 17.sp,
+                                    fontWeight: FontWeight.bold,
                                     color: Colors.white,
-                                    width: 2,
                                   ),
                                 ),
-                              )
-                                  .animate()
-                                  .fadeIn(duration: 600.ms)
-                                  .scale(duration: 600.ms),
+                              ),
+                              if (isPremium)
+                                Icon(
+                                  FontAwesomeIcons.crown,
+                                  color: Colors.amber.shade300,
+                                  size: 18,
+                                ).animate().scale(),
+                            ],
+                          ),
+
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.location_on,
+                                size: 15,
+                                color: Colors.white70,
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  "Lives in $location",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 12.sp,
+                                    color: Colors.white.withOpacity(.9),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          if (tagline.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                tagline,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12.sp,
+                                  color: Colors.white,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ).animate().fadeIn(),
                             ),
                         ],
                       ),
+                    ),
+                  ],
+                ),
 
-                      const SizedBox(width: 12),
+                const SizedBox(height: 12),
 
-                      /// Name + Location + Tagline
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 6, top: 6),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              /// Name + Age + Crown
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      "$userName, $age",
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 18.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  if (isPremium)
-                                    Icon(
-                                      FontAwesomeIcons.crown,
-                                      color: Colors.amber.shade300,
-                                      size: 18,
-                                    )
-                                        .animate()
-                                        .scale(duration: 700.ms)
-                                        .fadeIn(),
-                                ],
-                              ),
+                // Stats Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    StatItem(Icons.favorite_rounded, likes, "Likes"),
+                    StatItem(Icons.people_alt_rounded, matches, "Matches"),
+                    StatItem(Icons.remove_red_eye_rounded, views, "Views"),
+                  ],
+                ).animate().fadeIn().slideY(begin: .3),
 
-                              const SizedBox(height: 4),
+                const SizedBox(height: 10),
 
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.location_on,
-                                    size: 16.sp,
-                                    color: Colors.white70,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Expanded(
-                                    child: Text(
-                                      "Lives in $location",
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 12.sp,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.white.withValues(alpha: 0.95),
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                              if (tagline.isNotEmpty) ...[
-                                const SizedBox(height: 6),
-                                Text(
-                                  tagline,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 12.sp,
-                                    fontStyle: FontStyle.italic,
-                                    color: Colors.white,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ).animate().fadeIn(duration: 600.ms),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 14),
-
-                  /// Stats Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _StatItem(Icons.favorite_rounded, likes, "Likes"),
-                      _StatItem(
-                        Icons.people_alt_rounded,
-                        matches,
-                        "Matches",
-                      ),
-                      _StatItem(
-                        Icons.remove_red_eye_rounded,
-                        views,
-                        "Views",
-                      ),
-                    ],
-                  )
-                      .animate()
-                      .fadeIn(duration: 700.ms)
-                      .slideY(begin: 0.3, end: 0),
-
-                  const SizedBox(height: 14),
-
-                  /// Action Buttons Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      const _ActionButton(Icons.favorite_rounded, "Like"),
-                      const _ActionButton(Icons.share_rounded, "Share"),
-
-                      if (!isPremium)
-                        CustomGradientButton(
-                          text: "Upgrade",
-                          textColor: AppColors.primaryColor,
-                          backgroundColor: Colors.white,
-                          isBold: true,
-                          onPressed: () {},
-                        ).animate().fadeIn().scale(),
-                    ],
-                  ),
-                ],
-              ),
+                // if (!isPremium)
+                //   CustomGradientButton(
+                //     text: "Upgrade",
+                //     textColor: AppColors.primaryColor,
+                //     backgroundColor: Colors.white,
+                //     isBold: true,
+                //     onPressed: () =>
+                //         Navigator.push(context, MaterialPageRoute(builder: (_) => PremiumPage())),
+                //   ).animate().fadeIn().scale()
+              ],
             ),
           ],
         ),
@@ -263,46 +177,41 @@ class HeaderWidget extends StatelessWidget {
   }
 }
 
-/// ------------ STAT ITEM ------------
-class _StatItem extends StatelessWidget {
-  final IconData icon;
-  final String value;
-  final String label;
+/// ------ SMALLER COMPONENTS ---------
 
-  const _StatItem(this.icon, this.value, this.label, {super.key});
+class StatItem extends StatelessWidget {
+  final IconData icon;
+  final String value, label;
+
+  const StatItem(this.icon, this.value, this.label, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Icon(icon, color: Colors.white, size: 20),
-        const SizedBox(height: 4),
         Text(
           value,
           style: GoogleFonts.poppins(
             color: Colors.white,
-            fontSize: 14,
+            fontSize: 13,
             fontWeight: FontWeight.w600,
           ),
         ),
         Text(
           label,
-          style: GoogleFonts.poppins(
-            color: Colors.white.withOpacity(0.85),
-            fontSize: 13,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
         ),
       ],
     );
   }
 }
 
-/// ------------ ACTION BUTTON ------------
-class _ActionButton extends StatelessWidget {
+class ActionBtn extends StatelessWidget {
   final IconData icon;
   final String label;
 
-  const _ActionButton(this.icon, this.label);
+  const ActionBtn(this.icon, this.label);
 
   @override
   Widget build(BuildContext context) {
@@ -311,19 +220,18 @@ class _ActionButton extends StatelessWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+            filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
             child: Container(
-              padding: const EdgeInsets.all(12),
-              color: Colors.white.withValues(alpha: 0.1),
+              padding: const EdgeInsets.all(10),
+              color: Colors.white.withOpacity(.1),
               child: CircleAvatar(
-                radius: 20,
-                backgroundColor: Colors.white.withValues(alpha: 0.20),
-                child: Icon(icon, color: Colors.white, size: 18),
+                radius: 18,
+                backgroundColor: Colors.white.withOpacity(.2),
+                child: Icon(icon, size: 18, color: Colors.white),
               ),
             ),
           ),
         ),
-        const SizedBox(height: 6),
         Text(
           label,
           style: GoogleFonts.poppins(color: Colors.white, fontSize: 12),
@@ -333,22 +241,59 @@ class _ActionButton extends StatelessWidget {
   }
 }
 
+class OnlineDot extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 16,
+      height: 16,
+      decoration: BoxDecoration(
+        color: Colors.greenAccent,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white, width: 2),
+      ),
+    ).animate().fadeIn().scale();
+  }
+}
+
+class AnimatedHeart extends StatelessWidget {
+  final double size, alpha, dy;
+
+  const AnimatedHeart({
+    required this.size,
+    required this.alpha,
+    required this.dy,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Icon(
+          Icons.favorite,
+          size: size,
+          color: Colors.white.withOpacity(alpha),
+        )
+        .animate(onPlay: (c) => c.repeat())
+        .moveY(begin: 0, end: dy, duration: 1800.ms)
+        .fadeIn();
+  }
+}
+
 /// ------------ CURVED CLIPPER ------------
 class InwardArchClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     return Path()
-      ..lineTo(0, size.height - 40)
+      ..lineTo(0, size.height - 30)
       ..quadraticBezierTo(
         size.width / 2,
-        size.height + 40,
+        size.height + 30,
         size.width,
-        size.height - 40,
+        size.height - 30,
       )
       ..lineTo(size.width, 0)
       ..close();
   }
 
   @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
+  bool shouldReclip(CustomClipper<Path> old) => false;
 }

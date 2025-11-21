@@ -4,28 +4,37 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:rishta_app/core/constants/app_urls/api_urls.dart';
+import 'package:rishta_app/model/match/match_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
+import '../../services/user_session.dart';
 
 class ProfileDetailScreen extends StatefulWidget {
-  const ProfileDetailScreen({super.key});
+  final MatchResult matchResult;
+  const ProfileDetailScreen({super.key, required this.matchResult});
 
   @override
   State<ProfileDetailScreen> createState() => _ProfileDetailScreenState();
 }
 
 class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
-  bool isPremiumUser = false;
+  late bool isPremiumUser;
   bool isLiked = false;
   bool isRequestSent = false;
 
   @override
   Widget build(BuildContext context) {
+    final match = widget.matchResult;
+    final amIPremium = SessionController.user.user!.isPremium;
+    isPremiumUser = match.isPremium == true && amIPremium == true;
     return Scaffold(
       backgroundColor: Colors.white,
 
       body: SafeArea(
         child: Column(
           children: [
-            _topImageHeader(),
+            _topImageHeader(match.image ?? ''),
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
@@ -35,26 +44,26 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       20.verticalSpace,
-                      _headerInfo().animate().fadeIn(duration: 500.ms),
+                      _headerInfo(match).animate().fadeIn(duration: 500.ms),
                       25.verticalSpace,
 
                       _actionButtons().animate().slideY(begin: 0.3).fade(),
 
                       25.verticalSpace,
                       _sectionTitle("Basic Information"),
-                      _buildBasicInfo(),
+                      _buildBasicInfo(match),
 
                       20.verticalSpace,
                       _sectionTitle("Education"),
                       isPremiumUser
-                          ? _premiumUnlockWidget(false)
-                          : _premiumUnlockWidget(true),
+                          ? _premiumUnlockWidget(false, match)
+                          : _premiumUnlockWidget(true, match),
 
                       20.verticalSpace,
                       _sectionTitle("Professional Info"),
                       isPremiumUser
-                          ? _premiumUnlockWidget(false)
-                          : _premiumUnlockWidget(true),
+                          ? _premiumUnlockWidget(false, match)
+                          : _premiumUnlockWidget(true, match),
 
                       40.verticalSpace,
                     ],
@@ -72,21 +81,27 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
   // TOP IMAGE HEADER
   // -------------------------------------------
 
-  Widget _topImageHeader() {
+  Widget _topImageHeader(String image) {
     return SizedBox(
       height: 300.h,
       width: double.infinity,
       child: Stack(
         children: [
-          Container(
+          SizedBox(
             height: 300.h,
             width: double.infinity,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: NetworkImage(
-                  "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e",
+            child: CachedNetworkImage(
+              imageUrl: "${APIUrls.baseUrl}/$image",
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Container(
+                color: Colors.grey.shade300,
+                child: const Center(child: CircularProgressIndicator()),
+              ),
+              errorWidget: (context, url, error) => Container(
+                color: Colors.grey.shade200,
+                child: const Center(
+                  child: Icon(Icons.broken_image, size: 40, color: Colors.grey),
                 ),
-                fit: BoxFit.cover,
               ),
             ),
           ),
@@ -144,12 +159,12 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
   // PROFILE BASIC HEADER
   // -------------------------------------------
 
-  Widget _headerInfo() {
+  Widget _headerInfo(MatchResult match) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Ayesha Khan, 23",
+          "${match.firstName} ${match.lastName}, ${match.age}",
           style: GoogleFonts.poppins(
             fontSize: 22.sp,
             fontWeight: FontWeight.w700,
@@ -161,7 +176,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
             const Icon(Icons.location_on, size: 18, color: Colors.grey),
             5.horizontalSpace,
             Text(
-              "Lahore, Pakistan",
+              "${match.city}, ${match.country}",
               style: GoogleFonts.poppins(fontSize: 14.sp, color: Colors.grey),
             ),
           ],
@@ -264,13 +279,13 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
   // BASIC INFO (FREE USERS CAN SEE)
   // -------------------------------------------
 
-  Widget _buildBasicInfo() {
+  Widget _buildBasicInfo(MatchResult match) {
     return Column(
       children: [
-        _infoTile("Religion", "Islam"),
-        _infoTile("Community", "Awan"),
-        _infoTile("Height", "5ft 4in"),
-        _infoTile("Marital Status", "Single"),
+        _infoTile("Religion", "${match.religion}"),
+        _infoTile("Community", "${match.community}"),
+        _infoTile("Height", "${match.height}ft"),
+        _infoTile("Marital Status", "${match.maritalStatus}"),
       ],
     );
   }
@@ -298,14 +313,13 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
   // PREMIUM-LOCKED SECTIONS
   // -------------------------------------------
 
-  Widget _premiumUnlockWidget(bool locked) {
+  Widget _premiumUnlockWidget(bool locked, MatchResult match) {
     if (!locked) {
       return Column(
         children: [
-          _infoTile("Qualification", "BSCS (GCU Lahore)"),
-          _infoTile("Field of Study", "Computer Science"),
-          _infoTile("Job", "Flutter Developer"),
-          _infoTile("Income", "Rs 120,000"),
+          _infoTile("Qualification", "${match.qualification}"),
+          _infoTile("Field of Study", "${match.fieldOfStudy}"),
+          _infoTile("Job", "${match.job}"),
         ],
       );
     }

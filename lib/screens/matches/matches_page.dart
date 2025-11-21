@@ -2,11 +2,17 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:rishta_app/bloc/match/match_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rishta_app/core/constants/app_urls/api_urls.dart';
 import 'package:rishta_app/core/constants/color/app_color.dart';
+import 'package:rishta_app/model/match/match_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:rishta_app/screens/profile_detail/profile_detail_screen.dart';
+import 'package:rishta_app/services/user_session.dart';
 
 class MatchesPage extends StatefulWidget {
   final bool isPremiumUser;
@@ -20,6 +26,66 @@ class MatchesPage extends StatefulWidget {
 class _MatchesPageState extends State<MatchesPage> {
   // SAMPLE PROFILES
   final List<Map<String, dynamic>> matches = [
+    {
+      "name": "Ayesha",
+      "age": 22,
+      "city": "Lahore",
+      "caste": "Rajput",
+      "profession": "Software Engineer",
+      "image":
+          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80",
+      "premium": false,
+    },
+    {
+      "name": "Ali Raza",
+      "age": 25,
+      "city": "Karachi",
+      "caste": "Syed",
+      "profession": "Doctor",
+      "image":
+          "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=800&q=80",
+      "premium": true,
+    },
+    {
+      "name": "Hina",
+      "age": 23,
+      "city": "Islamabad",
+      "caste": "Malik",
+      "profession": "Teacher",
+      "image":
+          "https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=800&q=80",
+      "premium": true,
+    },
+    {
+      "name": "Ayesha",
+      "age": 22,
+      "city": "Lahore",
+      "caste": "Rajput",
+      "profession": "Software Engineer",
+      "image":
+          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80",
+      "premium": false,
+    },
+    {
+      "name": "Ali Raza",
+      "age": 25,
+      "city": "Karachi",
+      "caste": "Syed",
+      "profession": "Doctor",
+      "image":
+          "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=800&q=80",
+      "premium": true,
+    },
+    {
+      "name": "Hina",
+      "age": 23,
+      "city": "Islamabad",
+      "caste": "Malik",
+      "profession": "Teacher",
+      "image":
+          "https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=800&q=80",
+      "premium": true,
+    },
     {
       "name": "Ayesha",
       "age": 22,
@@ -257,18 +323,20 @@ class _MatchesPageState extends State<MatchesPage> {
     );
   }
 
-  Widget _partnerCard(Map<String, dynamic> m) {
-    bool isLocked = m["premium"] && !widget.isPremiumUser;
-
+  Widget _partnerCard(MatchResult m) {
+    final amIPremium = SessionController.user.user!.isPremium;
+    bool isLocked = m.isPremium == true && amIPremium == true;
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ProfileDetailScreen()),
+          MaterialPageRoute(
+            builder: (context) => ProfileDetailScreen(matchResult: m),
+          ),
         );
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 14),
+        margin: const EdgeInsets.symmetric(horizontal: 4),
         height: 480.h,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
@@ -286,13 +354,29 @@ class _MatchesPageState extends State<MatchesPage> {
             children: [
               // ------------------- IMAGE -------------------
               Positioned.fill(
-                child: Image.network(
-                  m["image"],
+                child: CachedNetworkImage(
+                  imageUrl: '${APIUrls.baseUrl}/${m.image}',
                   fit: BoxFit.cover,
                   color: isLocked ? Colors.black.withValues(alpha: 0.55) : null,
                   colorBlendMode: isLocked
                       ? BlendMode.darken
                       : BlendMode.srcOver,
+
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey.shade300,
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
+
+                  errorWidget: (context, url, error) => Container(
+                    color: Colors.grey.shade200,
+                    child: const Center(
+                      child: Icon(
+                        Icons.broken_image,
+                        size: 40,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
                 ),
               ),
 
@@ -330,27 +414,27 @@ class _MatchesPageState extends State<MatchesPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      m["name"],
+                      '${m.firstName} ${m.lastName}',
                       style: GoogleFonts.poppins(
                         color: Colors.white,
-                        fontSize: 24,
+                        fontSize: 18.sp,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      "${m["age"]} yrs • ${m["city"]} • ${m["caste"]}",
+                      "${m.age} yrs • ${m.city} • ${m.community}",
                       style: GoogleFonts.poppins(
                         color: Colors.white70,
-                        fontSize: 16,
+                        fontSize: 12.sp,
                       ),
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      m["profession"],
+                      '${m.job}',
                       style: GoogleFonts.poppins(
                         color: Colors.white,
-                        fontSize: 15,
+                        fontSize: 12.sp,
                       ),
                     ),
                   ],
@@ -412,34 +496,26 @@ class _MatchesPageState extends State<MatchesPage> {
         ],
       ),
 
-      body: Column(
-        children: [
-          const SizedBox(height: 6),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
-            child: Text(
-              "These matches are based on your preferences like age, city, caste, education and marital status.",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(fontSize: 13, color: Colors.black87),
-            ),
-          ),
-
-          Expanded(
-            child: CarouselSlider.builder(
+      body: SafeArea(
+        child: BlocBuilder<MatchBloc, MatchState>(
+          buildWhen: (current, previous) =>
+          current.matchModel.results != current.matchModel.results ||
+              current.apiResponse.status != previous.apiResponse.status,
+          builder: (context, state) {
+            return MasonryGridView.count(
+              crossAxisCount: 2,
+              mainAxisSpacing: 8,
+              crossAxisSpacing: .0055,
               itemCount: matches.length,
-              options: CarouselOptions(
-                height: 400.h,
-                enlargeCenterPage: true,
-                enableInfiniteScroll: false,
-                viewportFraction: 0.88,
-              ),
-              itemBuilder: (context, index, realIndex) {
-                return _partnerCard(matches[index]);
+              itemBuilder: (context, index) {
+                return SizedBox(
+                  height: (index % 2 == 0 ? 260.h : 320.h),
+                  child: _partnerCard(state.matchModel.results[index]),
+                );
               },
-            ),
-          ),
-        ],
+            );
+          },
+        ),
       ),
     );
   }
