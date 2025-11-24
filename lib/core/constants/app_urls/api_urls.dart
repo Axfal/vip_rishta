@@ -1,5 +1,5 @@
 class APIUrls {
-  static const String baseUrl = 'https://promac.pk';
+  static const String baseUrl = 'https://onlypureherbal.com';
 
   ///Authentication
   static const String login = '$baseUrl/api/accounts/login/';
@@ -21,4 +21,12 @@ class APIUrls {
   static const String suggestedMatch = '$baseUrl/api/social/matches/suggested';
   static const String updatePreferences =
       '$baseUrl/api/social/preference/update/';
+
+  static const String premiumPlan = '$baseUrl/api/premium/plans/';
+  static const String subscribePlan = '$baseUrl/api/premium/subscribe';
+
+  /// Activity
+  static const String sendContact = '$baseUrl/api/activity/contact/send/'; //id
+  static const String receiveContact = '$baseUrl/api/activity/contact/received/';
+  static const String approveContact = '$baseUrl/api/activity/contact/approve/'; //id
 }

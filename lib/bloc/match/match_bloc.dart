@@ -83,8 +83,7 @@ class MatchBloc extends Bloc<MatchEvent, MatchState> {
         "preferred_marital_status":
             event.partnerPreferenceModel.preferredMaritalStatus,
       };
-      final response = await activityApiRepo.suggestedMatch();
-
+      final response = await activityApiRepo.partnerPreference(data);
       if (response == null) {
         emit(
           state.copyWith(

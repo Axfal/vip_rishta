@@ -4,20 +4,17 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:rishta_app/screens/premium/premium_page.dart';
 import '../../../core/constants/color/app_color.dart';
-import '../../../core/constants/custom_button.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class HeaderWidget extends StatelessWidget {
   final String imgUrl, userName, location, tagline, likes, matches, views;
-  final int age;
   final bool isPremium, isOnline;
 
   const HeaderWidget({
     super.key,
     required this.imgUrl,
     required this.userName,
-    required this.age,
     required this.location,
     required this.likes,
     required this.matches,
@@ -67,9 +64,28 @@ class HeaderWidget extends StatelessWidget {
                     // Profile Picture + Online Dot
                     Stack(
                       children: [
-                        CircleAvatar(
-                          radius: 40,
-                          backgroundImage: AssetImage(imgUrl),
+                        ClipOval(
+                          child: CachedNetworkImage(
+                            imageUrl: imgUrl,
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.cover,
+
+                            // Placeholder
+                            placeholder: (context, url) => const CircleAvatar(
+                              radius: 40,
+                              backgroundColor: Colors.grey,
+                              child: Icon(Icons.person, color: Colors.white),
+                            ),
+
+                            // Error Image
+                            errorWidget: (context, url, error) =>
+                                const CircleAvatar(
+                                  radius: 40,
+                                  backgroundColor: Colors.grey,
+                                  child: Icon(Icons.error, color: Colors.white),
+                                ),
+                          ),
                         ).animate().fadeIn().scale(curve: Curves.easeOutBack),
 
                         if (isOnline)
@@ -88,7 +104,7 @@ class HeaderWidget extends StatelessWidget {
                             children: [
                               Expanded(
                                 child: Text(
-                                  "$userName, $age",
+                                  userName,
                                   style: GoogleFonts.poppins(
                                     fontSize: 17.sp,
                                     fontWeight: FontWeight.bold,

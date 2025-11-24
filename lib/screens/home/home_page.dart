@@ -13,6 +13,7 @@ import 'package:rishta_app/data/response/status.dart';
 import 'package:rishta_app/model/match/match_model.dart';
 import 'package:rishta_app/screens/home/widgets/header_widget.dart';
 import 'package:rishta_app/screens/matches/matches_page.dart';
+import 'package:rishta_app/services/user_session.dart';
 import '../../core/constants/color/app_color.dart';
 import '../../global_widgets/custom_drawer/custom_drawer.dart';
 import '../profile_detail/profile_detail_screen.dart';
@@ -25,109 +26,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     context.read<MatchBloc>().add(SuggestedMatchEvent());
-  //   });
-  // }
-
-  final List<Map<String, dynamic>> matches = [
-    {
-      "name": "Ayesha",
-      "age": 22,
-      "city": "Lahore",
-      "caste": "Rajput",
-      "profession": "Software Engineer",
-      "image":
-          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80",
-      "premium": false,
-    },
-    {
-      "name": "Ali Raza",
-      "age": 25,
-      "city": "Karachi",
-      "caste": "Syed",
-      "profession": "Doctor",
-      "image":
-          "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=800&q=80",
-      "premium": true,
-    },
-    {
-      "name": "Hina",
-      "age": 23,
-      "city": "Islamabad",
-      "caste": "Malik",
-      "profession": "Teacher",
-      "image":
-          "https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=800&q=80",
-      "premium": true,
-    },
-    {
-      "name": "Ayesha",
-      "age": 22,
-      "city": "Lahore",
-      "caste": "Rajput",
-      "profession": "Software Engineer",
-      "image":
-          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80",
-      "premium": false,
-    },
-    {
-      "name": "Ali Raza",
-      "age": 25,
-      "city": "Karachi",
-      "caste": "Syed",
-      "profession": "Doctor",
-      "image":
-          "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=800&q=80",
-      "premium": true,
-    },
-    {
-      "name": "Hina",
-      "age": 23,
-      "city": "Islamabad",
-      "caste": "Malik",
-      "profession": "Teacher",
-      "image":
-          "https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=800&q=80",
-      "premium": true,
-    },
-    {
-      "name": "Ayesha",
-      "age": 22,
-      "city": "Lahore",
-      "caste": "Rajput",
-      "profession": "Software Engineer",
-      "image":
-          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80",
-      "premium": false,
-    },
-    {
-      "name": "Ali Raza",
-      "age": 25,
-      "city": "Karachi",
-      "caste": "Syed",
-      "profession": "Doctor",
-      "image":
-          "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=800&q=80",
-      "premium": true,
-    },
-    {
-      "name": "Hina",
-      "age": 23,
-      "city": "Islamabad",
-      "caste": "Malik",
-      "profession": "Teacher",
-      "image":
-          "https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=800&q=80",
-      "premium": true,
-    },
-  ];
-
-  // ------------------ OPEN PREFERENCES POPUP --------------------
   void _openPreferencesDialog() {
     TextEditingController minAge = TextEditingController();
     TextEditingController maxAge = TextEditingController();
@@ -148,6 +46,8 @@ class _HomePageState extends State<HomePage> {
         );
       },
       pageBuilder: (context, _, __) {
+        final size = MediaQuery.of(context).size;
+
         return Center(
           child: SafeArea(
             child: ClipRRect(
@@ -158,6 +58,10 @@ class _HomePageState extends State<HomePage> {
                   color: Colors.transparent,
                   child: Container(
                     width: 340,
+                    // FIX: Give the dialog a maximum height to allow scrolling
+                    constraints: BoxConstraints(
+                      maxHeight: size.height * 0.80, // 80% of screen height
+                    ),
                     padding: const EdgeInsets.all(22),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30),
@@ -174,7 +78,10 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ],
                     ),
+
+                    // FIX: SINGLE SCROLL VIEW + KEYBOARD SAFE
                     child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -262,7 +169,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 onPressed: () {
                                   Navigator.pop(context);
-                                  // TODO: API CALL HERE
+                                  // API CALL HERE
                                 },
                                 child: Text(
                                   "Apply",
@@ -469,7 +376,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final userDetail = SessionController.user.user;
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       drawer: CustomDrawer(),
       appBar: AppBar(
@@ -494,10 +403,9 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Column(
           children: [
-            const HeaderWidget(
-              imgUrl: 'assets/dp_default.png',
-              userName: 'Sophia',
-              age: 26,
+            HeaderWidget(
+              imgUrl: '${APIUrls.baseUrl}/${userDetail?.image}',
+              userName: '${userDetail?.firstName} ${userDetail?.lastName}',
               location: 'Lahore, Pakistan',
               isPremium: false,
               isOnline: true,
@@ -512,7 +420,6 @@ class _HomePageState extends State<HomePage> {
                 listenWhen: (previous, current) =>
                     previous.apiResponse.status != current.apiResponse.status,
                 listener: (context, state) {
-                  // You can show snackbars or logs here if needed.
                   if (state.apiResponse.status == Status.error) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
