@@ -39,4 +39,99 @@ class ActivityHttpApiRepo extends ActivityApiRepo {
       rethrow;
     }
   }
+
+  /// Contact
+
+  @override
+  Future<dynamic> cancelRequest({
+    dynamic data,
+    required String requestedId,
+  }) async {
+    try {
+      final token = SessionController.user.tokens!.access.toString();
+      final response = await apiServices.deleteApi(
+        '${APIUrls.cancelRequest}$requestedId/',
+        data,
+        headers: {"Authorization": "Bearer $token"},
+      );
+      return response;
+    } catch (e) {
+      print('error: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<dynamic> getSentRequest(data) {
+    // TODO: implement getSentRequest
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<dynamic> sendContact({
+    dynamic data,
+    required String requestedId,
+  }) async {
+    try {
+      final token = SessionController.user.tokens!.access.toString();
+      final response = await apiServices.postApi(
+        '${APIUrls.sendContact}$requestedId/',
+        data,
+        headers: {"Authorization": "Bearer $token"},
+      );
+      return response;
+    } catch (e) {
+      print('error: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<dynamic> getSenContactRequestList() async {
+    try {
+      final token = SessionController.user.tokens!.access.toString();
+      final response = await apiServices.getApi(
+        APIUrls.mySentContactRequestList,
+        headers: {"Authorization": "Bearer $token"},
+      );
+      return response;
+    } catch (e) {
+      print('error: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<dynamic> approveContactRequest({
+    dynamic data,
+    required String requestedId,
+  }) async {
+    try {
+      final token = SessionController.user.tokens!.access.toString();
+      final response = await apiServices.postApi(
+        '${APIUrls.approveContact}$requestedId/',
+        data,
+        headers: {"Authorization": "Bearer $token"},
+      );
+      return response;
+    } catch (e) {
+      print('error: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<dynamic> receivedContactRequests() async{
+    try {
+      final token = SessionController.user.tokens!.access.toString();
+      final response = await apiServices.getApi(
+        APIUrls.receiveContact,
+        headers: {"Authorization": "Bearer $token"},
+      );
+      return response;
+    } catch (e) {
+      print('error: $e');
+      rethrow;
+    }
+  }
 }

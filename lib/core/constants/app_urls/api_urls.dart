@@ -27,6 +27,9 @@ class APIUrls {
 
   /// Activity
   static const String sendContact = '$baseUrl/api/activity/contact/send/'; //id
+  static const String mySentContactRequests = '$baseUrl/api/activity/contact/send/';
   static const String receiveContact = '$baseUrl/api/activity/contact/received/';
   static const String approveContact = '$baseUrl/api/activity/contact/approve/'; //id
+  static const String mySentContactRequestList = '$baseUrl/api/activity/contact/sent/ids/';
+  static const String cancelRequest = '$baseUrl/api/activity/contact/remove/'; //id
 }

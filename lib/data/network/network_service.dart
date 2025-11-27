@@ -117,8 +117,8 @@ class NetworkApiService implements BaseApiServices {
     String url,
     dynamic data, {
     File? file,
-   required String token,
-        Map<String, String>? headers,
+    required String token,
+    Map<String, String>? headers,
   }) async {
     if (kDebugMode) print('PUT $url');
 
@@ -127,7 +127,14 @@ class NetworkApiService implements BaseApiServices {
         var request = http.MultipartRequest('PUT', Uri.parse(url));
 
         request.headers.addAll(
-          getHeaders(customHeaders: headers ?? {"Accept": "application/json", "Authorization": "Bearer $token",}),
+          getHeaders(
+            customHeaders:
+                headers ??
+                {
+                  "Accept": "application/json",
+                  "Authorization": "Bearer $token",
+                },
+          ),
         );
 
         data.forEach((key, value) {
@@ -161,12 +168,20 @@ class NetworkApiService implements BaseApiServices {
   }
 
   @override
-  Future<dynamic> deleteApi(String url, dynamic data) async {
+  Future<dynamic> deleteApi(
+    String url,
+    dynamic data, {
+    Map<String, String>? headers,
+  }) async {
     if (kDebugMode) print('DELETE $url');
 
     try {
       final response = await http
-          .delete(Uri.parse(url), body: jsonEncode(data))
+          .delete(
+            Uri.parse(url),
+            body: jsonEncode(data),
+            headers: getHeaders(customHeaders: headers),
+          )
           .timeout(timeoutDuration);
       return _returnResponse(response);
     } on SocketException {
